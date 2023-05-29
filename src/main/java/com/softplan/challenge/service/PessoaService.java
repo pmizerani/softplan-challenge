@@ -6,13 +6,11 @@ import com.softplan.challenge.mapper.PessoaMapper;
 import com.softplan.challenge.model.Pessoa;
 import com.softplan.challenge.repository.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -36,13 +34,27 @@ public class PessoaService {
     }
 
     public Mono<PessoaResponseDto> buscarPessoaPorId(Long id) {
-        return Mono.justOrEmpty(pessoaRepository.findById(id)).map(PessoaMapper::pessoaToPessoaResponseDto)
-                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Pessoa não encontrada")));
+        Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
+        if (pessoaOptional.isEmpty()) return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Pessoa não encontrada"));
+        return Mono.just(PessoaMapper.pessoaToPessoaResponseDto(pessoaOptional.get()));
     }
 
-    public void excluirPessoaPorId(Long id) {
-        Optional<Pessoa> pessoa = pessoaRepository.findById(id);
-        if (pessoa.isPresent()) pessoaRepository.deleteById(id);
-        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pessoa não encontrada");
+    public Mono<Void> excluirPessoaPorId(Long id) {
+        Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
+        if (pessoaOptional.isEmpty()) return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Pessoa não encontrada"));
+        pessoaRepository.deleteById(id);
+        return Mono.empty();
+    }
+
+    public Mono<PessoaResponseDto> atualizarPessoaPorId(Long id, PessoaRequestDto pessoaRequestDto) {
+
+        Optional<Pessoa> pessoaOptional = pessoaRepository.findById(id);
+        if (pessoaOptional.isEmpty()) return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Pessoa não encontrada"));
+
+        Pessoa pessoa = pessoaOptional.get();
+        pessoa.setNome(pessoaRequestDto.getNome());
+        pessoa.setEmail(pessoaRequestDto.getEmail());
+        return Mono.just(PessoaMapper.pessoaToPessoaResponseDto(pessoaRepository.save(pessoa)));
+
     }
 }

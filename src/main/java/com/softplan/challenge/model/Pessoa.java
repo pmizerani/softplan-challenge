@@ -1,6 +1,5 @@
 package com.softplan.challenge.model;
 
-import com.softplan.challenge.config.Audit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

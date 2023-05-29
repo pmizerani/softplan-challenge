@@ -19,6 +19,15 @@ public class PessoaMapper {
                 .build();
     }
 
+    public static Pessoa pessoaRequesDtoToPessoaUpdate(Long id, PessoaRequestDto pessoaRequestDto) {
+        return Pessoa
+                .builder()
+                .id(id)
+                .nome(pessoaRequestDto.getNome())
+                .email(pessoaRequestDto.getEmail())
+                .build();
+    }
+
     public static PessoaResponseDto pessoaToPessoaResponseDto(Pessoa pessoa) {
         return PessoaResponseDto
                 .builder()

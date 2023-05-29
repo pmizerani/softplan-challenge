@@ -2,7 +2,6 @@ package com.softplan.challenge.controller;
 
 import com.softplan.challenge.dto.PessoaRequestDto;
 import com.softplan.challenge.dto.PessoaResponseDto;
-import com.softplan.challenge.model.Pessoa;
 import com.softplan.challenge.service.PessoaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,7 +34,7 @@ public class PessoaController {
     @PostMapping()
     @ResponseStatus(CREATED)
     @ApiResponse(responseCode = "201", description = "Created")
-    @Operation(summary = "Sumary", description = "Description")
+    @Operation(summary = "Cadastrar nova pessoa", description = "Recurso responsável por cadastrar uma nova pessoa")
     public Mono<PessoaResponseDto> cadastrarPessoa(@Validated @RequestBody PessoaRequestDto pessoaRequestDto) {
         return pessoaService.cadastrarPessoa(pessoaRequestDto);
     }
@@ -43,6 +42,7 @@ public class PessoaController {
     @GetMapping()
     @ApiResponse(responseCode = "200", description = "Ok")
     @ApiResponse(responseCode = "204", description = "No content")
+    @Operation(summary = "Buscar pessoas", description = "Recurso responsável por buscar todas as pessoas cadastradas por paginação")
     public Flux<PessoaResponseDto> buscarPessoas(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam("size") Integer size) {
@@ -51,19 +51,22 @@ public class PessoaController {
 
     @GetMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Ok")
+    @Operation(summary = "Buscar pessoa por ID", description = "Recurso responsável por buscar uma pessoa por ID")
     public Mono<PessoaResponseDto> buscarPessoaPorId(@PathVariable Long id) {
         return pessoaService.buscarPessoaPorId(id);
     }
 
     @PutMapping("/{id}")
-    public Mono<Pessoa> atualizarPessoaPorId(@PathVariable Long id) {
-        return Mono.empty();
+    @Operation(summary = "Atualizar pessoa", description = "Recurso responsável por atualizar os dados de uma pessoa")
+    public Mono<PessoaResponseDto> atualizarPessoaPorId(@PathVariable Long id, @Validated @RequestBody PessoaRequestDto pessoaRequestDto) {
+        return pessoaService.atualizarPessoaPorId(id, pessoaRequestDto);
     }
 
     @DeleteMapping("/{id}")
     @ApiResponse(responseCode = "200", description = "Ok")
-    public void excluirPessoaPorId(@PathVariable Long id) {
-        pessoaService.excluirPessoaPorId(id);
+    @Operation(summary = "Excluir pessoa", description = "Recurso responsável por excluir uma pessoa")
+    public Mono<Void> excluirPessoaPorId(@PathVariable Long id) {
+        return pessoaService.excluirPessoaPorId(id);
     }
 
 }

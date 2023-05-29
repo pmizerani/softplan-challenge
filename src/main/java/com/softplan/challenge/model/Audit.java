@@ -1,4 +1,4 @@
-package com.softplan.challenge.config;
+package com.softplan.challenge.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +23,7 @@ public abstract class Audit {
     @Temporal(TIMESTAMP)
     protected Date createdDate;
 
-    @LastModifiedDate
+    @LastModifiedDate()
     @Temporal(TIMESTAMP)
     protected Date lastModifiedDate;
 
